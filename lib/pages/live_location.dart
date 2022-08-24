@@ -19,7 +19,7 @@ class _LiveLocationPageState extends State<LiveLocationPage> {
   late final MapController _mapController;
   List<LatLng> point = [];
 
-  bool _liveUpdate = true;
+  final bool _liveUpdate = true;
   bool _permission = false;
 
   String? _serviceError = '';
@@ -135,39 +135,39 @@ class _LiveLocationPageState extends State<LiveLocationPage> {
                       'Error occured while acquiring location. Error Message : '
                       '$_serviceError'),
             ),
-            Flexible(
-              child: FlutterMap(
-                mapController: _mapController,
-                options: MapOptions(
-                  center:
-                      LatLng(currentLatLng.latitude, currentLatLng.longitude),
-                  zoom: 15,
-                  interactiveFlags: interActiveFlags,
-                ),
-                children: [
-                  TileLayer(
-                    // urlTemplate:
-                    //     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    // subdomains: ['a', 'b', 'c'],
-                    // userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-                    urlTemplate:
-                        "https://api.mapbox.com/styles/v1/khtntt/cl70oljur002o15lac6it39ek/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoia2h0bnR0IiwiYSI6ImNsNzBtaDV6aTBmanIzcHIxeG9rbTB0NmoifQ.XiZPYyo_f7n1Jkp6cOGn_A",
-                    additionalOptions: const {
-                      'accessToken':
-                          'pk.eyJ1Ijoia2h0bnR0IiwiYSI6ImNsNzBtaDV6aTBmanIzcHIxeG9rbTB0NmoifQ.XiZPYyo_f7n1Jkp6cOGn_A',
-                      'id': 'mapbox.mapbox-bathymetry-v2'
-                    },
-                  ),
-                  MarkerLayer(markers: markers),
-                  PolylineLayer(
-                    polylines: [
-                      Polyline(
-                          points: point, strokeWidth: 4, color: Colors.purple),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            // Flexible(
+            //   child: FlutterMap(
+            //     mapController: _mapController,
+            //     options: MapOptions(
+            //       center:
+            //           LatLng(currentLatLng.latitude, currentLatLng.longitude),
+            //       zoom: 15,
+            //       interactiveFlags: interActiveFlags,
+            //     ),
+            //     children: [
+            //       TileLayer(
+            //         // urlTemplate:
+            //         //     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            //         // subdomains: ['a', 'b', 'c'],
+            //         // userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+            //         urlTemplate:
+            //             "https://api.mapbox.com/styles/v1/khtntt/cl70oljur002o15lac6it39ek/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoia2h0bnR0IiwiYSI6ImNsNzBtaDV6aTBmanIzcHIxeG9rbTB0NmoifQ.XiZPYyo_f7n1Jkp6cOGn_A",
+            //         additionalOptions: const {
+            //           'accessToken':
+            //               'pk.eyJ1Ijoia2h0bnR0IiwiYSI6ImNsNzBtaDV6aTBmanIzcHIxeG9rbTB0NmoifQ.XiZPYyo_f7n1Jkp6cOGn_A',
+            //           'id': 'mapbox.mapbox-bathymetry-v2'
+            //         },
+            //       ),
+            //       MarkerLayer(markers: markers),
+            //       PolylineLayer(
+            //         polylines: [
+            //           Polyline(
+            //               points: point, strokeWidth: 4, color: Colors.purple),
+            //         ],
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),

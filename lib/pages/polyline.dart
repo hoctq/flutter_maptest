@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_maptest/constants/define.dart';
 import 'package:flutter_maptest/constants/polyline_data.dart';
 import 'package:flutter_maptest/widgets/drawer.dart';
 // ignore: depend_on_referenced_packages
 import 'package:latlong2/latlong.dart';
-
-import '../request/direction_request.dart';
 
 class PolylinePage extends StatefulWidget {
   static const String route = 'polyline';
@@ -35,8 +32,6 @@ class _PolylinePageState extends State<PolylinePage> {
     // await Future<void>.delayed(const Duration(seconds: 3));
     return polyLines;
   }
-
- 
 
   @override
   void initState() {
@@ -74,21 +69,21 @@ class _PolylinePageState extends State<PolylinePage> {
                             });
                           },
                         ),
-                        children: [
-                          TileLayer(
-                            urlTemplate:
-                                "https://api.mapbox.com/styles/v1/khtntt/cl70oljur002o15lac6it39ek/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoia2h0bnR0IiwiYSI6ImNsNzBtaDV6aTBmanIzcHIxeG9rbTB0NmoifQ.XiZPYyo_f7n1Jkp6cOGn_A",
-                            additionalOptions: const {
-                              'accessToken':
-                                  'pk.eyJ1Ijoia2h0bnR0IiwiYSI6ImNsNzBtaDV6aTBmanIzcHIxeG9rbTB0NmoifQ.XiZPYyo_f7n1Jkp6cOGn_A',
-                              'id': 'mapbox.mapbox-bathymetry-v2'
-                            },
-                          ),
-                          PolylineLayer(
-                            polylines: snapshot.data!,
-                            polylineCulling: true,
-                          ),
-                        ],
+                        // children: [
+                        //   TileLayer(
+                        //     urlTemplate:
+                        //         "https://api.mapbox.com/styles/v1/khtntt/cl70oljur002o15lac6it39ek/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoia2h0bnR0IiwiYSI6ImNsNzBtaDV6aTBmanIzcHIxeG9rbTB0NmoifQ.XiZPYyo_f7n1Jkp6cOGn_A",
+                        //     additionalOptions: const {
+                        //       'accessToken':
+                        //           'pk.eyJ1Ijoia2h0bnR0IiwiYSI6ImNsNzBtaDV6aTBmanIzcHIxeG9rbTB0NmoifQ.XiZPYyo_f7n1Jkp6cOGn_A',
+                        //       'id': 'mapbox.mapbox-bathymetry-v2'
+                        //     },
+                        //   ),
+                        //   PolylineLayer(
+                        //     polylines: snapshot.data!,
+                        //     polylineCulling: true,
+                        //   ),
+                        // ],
                       ),
                     ),
                   ],

@@ -58,6 +58,13 @@ class _LiveLocationPageState extends State<LiveLocationPage> {
         if (_permission) {
           location = await _locationService.getLocation();
           _currentLocation = location;
+          setState(() {
+            _mapController.move(
+                LatLng(
+                    _currentLocation!.latitude!, _currentLocation!.longitude!),
+                _mapController.zoom);
+          });
+
           _locationService.onLocationChanged
               .listen((LocationData result) async {
             if (mounted) {
@@ -70,12 +77,12 @@ class _LiveLocationPageState extends State<LiveLocationPage> {
                       _currentLocation!.longitude!.toDouble()),
                 );
                 // If Live Update is enabled, move map center
-                if (_liveUpdate) {
-                  _mapController.move(
-                      LatLng(_currentLocation!.latitude!,
-                          _currentLocation!.longitude!),
-                      _mapController.zoom);
-                }
+                // if (_liveUpdate) {
+                //   _mapController.move(
+                //       LatLng(_currentLocation!.latitude!,
+                //           _currentLocation!.longitude!),
+                //       _mapController.zoom);
+                // }
               });
             }
           });
@@ -135,39 +142,47 @@ class _LiveLocationPageState extends State<LiveLocationPage> {
                       'Error occured while acquiring location. Error Message : '
                       '$_serviceError'),
             ),
-            // Flexible(
-            //   child: FlutterMap(
-            //     mapController: _mapController,
-            //     options: MapOptions(
-            //       center:
-            //           LatLng(currentLatLng.latitude, currentLatLng.longitude),
-            //       zoom: 15,
-            //       interactiveFlags: interActiveFlags,
-            //     ),
-            //     children: [
-            //       TileLayer(
-            //         // urlTemplate:
-            //         //     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            //         // subdomains: ['a', 'b', 'c'],
-            //         // userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-            //         urlTemplate:
-            //             "https://api.mapbox.com/styles/v1/khtntt/cl70oljur002o15lac6it39ek/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoia2h0bnR0IiwiYSI6ImNsNzBtaDV6aTBmanIzcHIxeG9rbTB0NmoifQ.XiZPYyo_f7n1Jkp6cOGn_A",
-            //         additionalOptions: const {
-            //           'accessToken':
-            //               'pk.eyJ1Ijoia2h0bnR0IiwiYSI6ImNsNzBtaDV6aTBmanIzcHIxeG9rbTB0NmoifQ.XiZPYyo_f7n1Jkp6cOGn_A',
-            //           'id': 'mapbox.mapbox-bathymetry-v2'
-            //         },
-            //       ),
-            //       MarkerLayer(markers: markers),
-            //       PolylineLayer(
-            //         polylines: [
-            //           Polyline(
-            //               points: point, strokeWidth: 4, color: Colors.purple),
-            //         ],
-            //       ),
-            //     ],
-            //   ),
-            // ),
+            Flexible(
+              child: FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  center:
+                      LatLng(currentLatLng.latitude, currentLatLng.longitude),
+                  zoom: 15,
+                  interactiveFlags: interActiveFlags,
+                ),
+                layers: [
+                  PolylineLayerOptions(
+                    polylines: [
+                      Polyline(
+                          points: point, strokeWidth: 4, color: Colors.purple),
+                    ],
+                  ),
+                  MarkerLayerOptions(markers: markers),
+                ],
+                children: [
+                  TileLayerWidget(
+                    options: TileLayerOptions(
+                      urlTemplate:
+                          "https://api.mapbox.com/styles/v1/khtntt/cl70oljur002o15lac6it39ek/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoia2h0bnR0IiwiYSI6ImNsNzBtaDV6aTBmanIzcHIxeG9rbTB0NmoifQ.XiZPYyo_f7n1Jkp6cOGn_A",
+                      additionalOptions: const {
+                        'accessToken':
+                            'pk.eyJ1Ijoia2h0bnR0IiwiYSI6ImNsNzBtaDV6aTBmanIzcHIxeG9rbTB0NmoifQ.XiZPYyo_f7n1Jkp6cOGn_A',
+                        'id': 'mapbox.mapbox-bathymetry-v2'
+                      },
+                      maxZoom: 19,
+                    ),
+                  ),
+                  // MarkerLayer(markers: markers),
+                  // PolylineLayer(
+                  //   polylines: [
+                  //     Polyline(
+                  //         points: point, strokeWidth: 4, color: Colors.purple),
+                  //   ],
+                  // ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

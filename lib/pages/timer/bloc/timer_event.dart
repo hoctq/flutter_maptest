@@ -8,9 +8,13 @@ abstract class TimerEvent extends Equatable {
 }
 
 class TimerStarted extends TimerEvent {
-  const TimerStarted({required this.duration, required this.distance});
+  const TimerStarted(
+      {required this.duration,
+      required this.positionPoint,
+      required this.distance});
   final int duration;
-  final int distance;
+  final List<LatLng> positionPoint;
+  final double distance;
 }
 
 class TimerPaused extends TimerEvent {
@@ -33,9 +37,17 @@ class TimerTicked extends TimerEvent {
   List<Object> get props => [duration];
 }
 
-class TimerLocate extends TimerEvent {
-  const TimerLocate({required this.distance});
-  final int distance;
+class TimerPositionPoint extends TimerEvent {
+  const TimerPositionPoint({required this.positionPoint});
+  final List<LatLng> positionPoint;
+
+  @override
+  List<Object> get props => [positionPoint];
+}
+
+class TimerDistance extends TimerEvent {
+  const TimerDistance({required this.distance});
+  final double distance;
 
   @override
   List<Object> get props => [distance];

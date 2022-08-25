@@ -76,7 +76,9 @@ class Actions extends StatelessWidget {
               FloatingActionButton(
                 child: const Icon(Icons.play_arrow),
                 onPressed: () => context.read<TimerBloc>().add(TimerStarted(
-                    duration: state.duration, distance: state.duration)),
+                    duration: state.duration,
+                    positionPoint: state.positionPoint,
+                    distance: state.distance)),
               ),
             ],
             if (state is TimerRunInProgress) ...[

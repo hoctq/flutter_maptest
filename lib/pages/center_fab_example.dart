@@ -36,6 +36,13 @@ class _CenterFabExampleState extends State<CenterFabExample> {
     super.dispose();
   }
 
+  void dragMap() {
+    setState(
+      () => _centerOnLocationUpdate = CenterOnLocationUpdate.never,
+    );
+    print(_centerOnLocationUpdate);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,8 +53,11 @@ class _CenterFabExampleState extends State<CenterFabExample> {
       body: BlocProvider(
         create: (_) => TimerBloc(ticker: const Ticker()),
         child: Stack(fit: StackFit.expand, children: [
-          BlocBuilder<TimerBloc, TimerState>(
-            builder: (context, state) => mapbox(state),
+          LiveMap(
+            centerCurrentLocationStreamController:
+                _centerCurrentLocationStreamController.stream,
+            centerOnLocationUpdate: _centerOnLocationUpdate,
+            onUserDragMap: dragMap,
           ),
           Positioned(
             left: 20,
@@ -82,7 +92,7 @@ class _CenterFabExampleState extends State<CenterFabExample> {
     );
   }
 
-  Widget mapbox(TimerState state) {
+  Widget mapbox() {
     return FlutterMap(
       options: MapOptions(
         center: LatLng(0, 0),
@@ -90,9 +100,9 @@ class _CenterFabExampleState extends State<CenterFabExample> {
         maxZoom: 19,
         // Stop centering the location marker on the map if user interacted with the map.
         onPositionChanged: (MapPosition position, bool hasGesture) {
-          if (state is TimerRunInProgress) {
-            print('heheheh');
-          }
+          // if (state is TimerRunInProgress) {
+          //   print('heheheh');
+          // }
           if (hasGesture) {
             setState(
               () => _centerOnLocationUpdate = CenterOnLocationUpdate.never,
@@ -123,7 +133,7 @@ class _CenterFabExampleState extends State<CenterFabExample> {
         ),
       ],
       layers: [
-        PolylineLayerOptions(polylines: getPolylines()),
+        PolylineLayerOptions(polylines: getPolylines(context)),
       ],
     );
   }
@@ -160,20 +170,14 @@ Future<Position> _determinePosition() async {
     return Future.error(
         'Location permissions are permanently denied, we cannot request permissions.');
   }
-  // Geolocator.getPositionStream().listen((Position? position) {
-  //   print(position == null
-  //       ? 'Unknown'
-  //       : '11${position.latitude.toString()}, 22${position.longitude.toString()}');
-  // });
-  // When we reach here, permissions are granted and we can
-  // continue accessing the position of the device.
+
   return await Geolocator.getCurrentPosition();
 }
 
 late Future<List<Polyline>> polylines;
 
-List<Polyline> getPolylines() {
-  List<LatLng> point = [];
+List<Polyline> getPolylines(BuildContext context) {
+  List<LatLng> point = []; //
   for (int i = 0; i < geojson.length; i++) {
     point.add(LatLng(geojson[i][1], geojson[i][0]));
   }
@@ -186,6 +190,65 @@ List<Polyline> getPolylines() {
   ];
   // await Future<void>.delayed(const Duration(seconds: 3));
   return polyLines;
+}
+
+class LiveMap extends StatelessWidget {
+  // const LiveMap({super.key});
+  final Stream<double?> centerCurrentLocationStreamController;
+  final CenterOnLocationUpdate centerOnLocationUpdate;
+  final VoidCallback onUserDragMap;
+
+  const LiveMap({
+    required this.centerCurrentLocationStreamController,
+    required this.centerOnLocationUpdate,
+    required this.onUserDragMap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final point = context.select((TimerBloc bloc) => bloc.state.positionPoint);
+    return FlutterMap(
+      options: MapOptions(
+          zoom: 5,
+          maxZoom: 19,
+          onPositionChanged: (MapPosition position, bool hasGesture) {
+            if (hasGesture) {
+              onUserDragMap;
+            }
+          }),
+      // ignore: sort_child_properties_last
+      children: [
+        TileLayerWidget(
+          options: TileLayerOptions(
+            urlTemplate:
+                "https://api.mapbox.com/styles/v1/khtntt/cl70oljur002o15lac6it39ek/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoia2h0bnR0IiwiYSI6ImNsNzBtaDV6aTBmanIzcHIxeG9rbTB0NmoifQ.XiZPYyo_f7n1Jkp6cOGn_A",
+            additionalOptions: const {
+              'accessToken':
+                  'pk.eyJ1Ijoia2h0bnR0IiwiYSI6ImNsNzBtaDV6aTBmanIzcHIxeG9rbTB0NmoifQ.XiZPYyo_f7n1Jkp6cOGn_A',
+              'id': 'mapbox.mapbox-bathymetry-v2'
+            },
+            maxZoom: 19,
+          ),
+        ),
+        LocationMarkerLayerWidget(
+          plugin: LocationMarkerPlugin(
+            centerCurrentLocationStream: centerCurrentLocationStreamController,
+            centerOnLocationUpdate: centerOnLocationUpdate,
+          ),
+        ),
+      ],
+      layers: [
+        PolylineLayerOptions(polylines: [
+          Polyline(
+            points: point,
+            strokeWidth: 4,
+            color: Colors.amber,
+          ),
+        ]),
+        PolylineLayerOptions(polylines: getPolylines(context)),
+      ],
+    );
+  }
 }
 
 class TimerText1 extends StatelessWidget {
@@ -306,7 +369,9 @@ class MyWidget extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () => context.read<TimerBloc>().add(
                               TimerStarted(
-                                  duration: state.duration, distance: 0)),
+                                  duration: state.duration,
+                                  positionPoint: state.positionPoint,
+                                  distance: state.distance)),
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(100, 100),
                             shape: const CircleBorder(),

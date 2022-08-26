@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_maptest/pages/center_fab_example.dart';
 import 'package:flutter_maptest/pages/home.dart';
+import 'package:flutter_maptest/pages/home2.dart';
 import 'package:flutter_maptest/pages/live_location.dart';
 import 'package:flutter_maptest/pages/polyline.dart';
 import 'package:flutter_maptest/pages/timer/timer.dart';
@@ -27,7 +28,8 @@ class MyApp extends StatelessWidget {
         PolylinePage.route: (context) => const PolylinePage(),
         LiveLocationPage.route: (context) => const LiveLocationPage(),
         CenterFabExample.route: (context) => CenterFabExample(),
-        TimerPage.route: (context) => const TimerPage()
+        TimerPage.route: (context) => const TimerPage(),
+        HomePage.route: (context) => const HomePage(),
       },
     );
   }

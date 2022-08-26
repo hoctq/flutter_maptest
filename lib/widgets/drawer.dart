@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_maptest/pages/center_fab_example.dart';
 import 'package:flutter_maptest/pages/home.dart';
+import 'package:flutter_maptest/pages/home2.dart';
 import 'package:flutter_maptest/pages/live_location.dart';
 import 'package:flutter_maptest/pages/polyline.dart';
 import 'package:flutter_maptest/pages/timer/timer.dart';
@@ -59,6 +60,12 @@ Drawer buildDrawer(BuildContext context, String currentRoute) {
           context,
           const Text('Live Location'),
           LiveLocationPage.route,
+          currentRoute,
+        ),
+        _buildMenuItem(
+          context,
+          const Text('Trong anh'),
+          HomePage.route,
           currentRoute,
         )
       ],

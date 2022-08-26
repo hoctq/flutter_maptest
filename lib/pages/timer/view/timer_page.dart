@@ -78,7 +78,8 @@ class Actions extends StatelessWidget {
                 onPressed: () => context.read<TimerBloc>().add(TimerStarted(
                     duration: state.duration,
                     positionPoint: state.positionPoint,
-                    distance: state.distance)),
+                    distance: state.distance,
+                    list: state.list)),
               ),
             ],
             if (state is TimerRunInProgress) ...[

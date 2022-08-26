@@ -238,13 +238,13 @@ class LiveMap extends StatelessWidget {
         ),
       ],
       layers: [
-        PolylineLayerOptions(polylines: [
-          Polyline(
-            points: point,
-            strokeWidth: 4,
-            color: Colors.amber,
-          ),
-        ]),
+        // PolylineLayerOptions(polylines: [
+        //   Polyline(
+        //     points: point,
+        //     strokeWidth: 4,
+        //     color: Colors.amber,
+        //   ),
+        // ]),
         PolylineLayerOptions(polylines: getPolylines(context)),
       ],
     );
@@ -272,6 +272,18 @@ class DistanceText extends StatelessWidget {
   Widget build(BuildContext context) {
     final distance = context.select((TimerBloc bloc) => bloc.state.distance);
     return Text('$distance', style: const TextStyle(fontSize: 20));
+  }
+}
+
+class AvgSpreed extends StatelessWidget {
+  const AvgSpreed({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final distance = context.select((TimerBloc bloc) => bloc.state.distance);
+    final duration = context.select((TimerBloc bloc) => bloc.state.duration);
+    final avgSpeed = distance / duration;
+    return Text('$avgSpeed', style: const TextStyle(fontSize: 20));
   }
 }
 
@@ -344,34 +356,31 @@ class MyWidget extends StatelessWidget {
                       Column(
                         children: const [
                           Text('Avg. speed'),
-                          Text(
-                            '00:00',
-                            style: TextStyle(
-                              fontSize: 20,
-                            ),
-                          ),
+                          AvgSpreed(),
                         ],
                       )
                     ]),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              shape: const CircleBorder(),
-                              padding: const EdgeInsets.all(5)),
-                          child: const Icon(
-                            Icons.add,
-                            size: 50,
-                          ),
-                          onPressed: () => {}),
+                      // ElevatedButton(
+                      //     style: ElevatedButton.styleFrom(
+                      //         shape: const CircleBorder(),
+                      //         padding: const EdgeInsets.all(5)),
+                      //     child: const Icon(
+                      //       Icons.add,
+                      //       size: 50,
+                      //     ),
+                      //     onPressed: () => {}),
                       if (state is TimerInitial) ...[
                         ElevatedButton(
-                          onPressed: () => context.read<TimerBloc>().add(
-                              TimerStarted(
-                                  duration: state.duration,
-                                  positionPoint: state.positionPoint,
-                                  distance: state.distance)),
+                          onPressed: () =>
+                              context.read<TimerBloc>().add(TimerStarted(
+                                    duration: state.duration,
+                                    positionPoint: state.positionPoint,
+                                    distance: state.distance,
+                                    list: state.list,
+                                  )),
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(100, 100),
                             shape: const CircleBorder(),
@@ -396,18 +405,6 @@ class MyWidget extends StatelessWidget {
                             style: TextStyle(fontSize: 18),
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () =>
-                              context.read<TimerBloc>().add(const TimerReset()),
-                          style: ElevatedButton.styleFrom(
-                            fixedSize: const Size(100, 100),
-                            shape: const CircleBorder(),
-                          ),
-                          child: const Text(
-                            'Reset',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ),
                       ],
                       if (state is TimerRunPause) ...[
                         ElevatedButton(
@@ -420,6 +417,19 @@ class MyWidget extends StatelessWidget {
                           ),
                           child: const Text(
                             'Resumed',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => context
+                              .read<TimerBloc>()
+                              .add(const TimerComplete()),
+                          style: ElevatedButton.styleFrom(
+                            fixedSize: const Size(100, 100),
+                            shape: const CircleBorder(),
+                          ),
+                          child: const Text(
+                            'Complete',
                             style: TextStyle(fontSize: 18),
                           ),
                         ),
@@ -439,27 +449,32 @@ class MyWidget extends StatelessWidget {
                       if (state is TimerRunComplete) ...[
                         ElevatedButton(
                           onPressed: () =>
-                              context.read<TimerBloc>().add(const TimerReset()),
+                              context.read<TimerBloc>().add(const TimerStarted(
+                                    duration: 0,
+                                    positionPoint: [],
+                                    distance: 0,
+                                    list: [],
+                                  )),
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size(100, 100),
                             shape: const CircleBorder(),
                           ),
                           child: const Text(
-                            'Reset',
+                            'Start',
                             style: TextStyle(fontSize: 18),
                           ),
                         ),
                       ],
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(5)),
-                        child: const Icon(
-                          Icons.add,
-                          size: 50,
-                        ),
-                        onPressed: () {},
-                      ),
+                      // ElevatedButton(
+                      //   style: ElevatedButton.styleFrom(
+                      //       shape: const CircleBorder(),
+                      //       padding: const EdgeInsets.all(5)),
+                      //   child: const Icon(
+                      //     Icons.add,
+                      //     size: 50,
+                      //   ),
+                      //   onPressed: () {},
+                      // ),
                     ]),
               ],
             ),

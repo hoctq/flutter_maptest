@@ -13,7 +13,7 @@ part 'timer_state.dart';
 class TimerBloc extends Bloc<TimerEvent, TimerState> {
   TimerBloc({required Ticker ticker})
       : _ticker = ticker,
-        super(const TimerInitial(_duration, _positionPoint, _distance)) {
+        super(const TimerInitial(_duration, _positionPoint, _distance, _list)) {
     on<TimerStarted>(_onStarted);
     on<TimerPaused>(_onPaused);
     on<TimerResumed>(_onResumed);
@@ -21,13 +21,14 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     on<TimerTicked>(_onTicked);
     on<TimerPositionPoint>(_onPositionPoint);
     on<TimerDistance>(_onDistance);
-    // on<TimerRunComplete>(_onComplete);
+    on<TimerComplete>(_onComplete);
   }
 
   final Ticker _ticker;
   static const int _duration = 0;
   static const List<LatLng> _positionPoint = [];
   static const double _distance = 0;
+  static const List<List<LatLng>> _list = [];
 
   StreamSubscription<int>? _tickerSubscription;
   StreamSubscription<Position>? _positionStream;
@@ -45,7 +46,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
   void _onStarted(TimerStarted event, Emitter<TimerState> emit) {
     emit(TimerRunInProgress(
-        event.duration, event.positionPoint, event.distance));
+        event.duration, event.positionPoint, event.distance, event.list));
     _tickerSubscription?.cancel();
     _positionStream?.cancel();
     _tickerSubscription = _ticker
@@ -57,7 +58,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
           ? 'Unknown'
           : '${position.latitude.toString()}, ${position.longitude.toString()}');
       if (position == null) return;
-      final Distance distance = new Distance();
+      const Distance distance = Distance();
       if (state.positionPoint.isNotEmpty) {
         final double metdadi = distance.as(
             LengthUnit.Meter,
@@ -71,6 +72,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       print(state.positionPoint);
       add(TimerPositionPoint(
           positionPoint: [...state.positionPoint, newpoint]));
+      add(const TimerList(list: []));
     });
   }
 
@@ -78,7 +80,8 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     if (state is TimerRunInProgress) {
       _tickerSubscription?.pause();
       _positionStream?.pause();
-      emit(TimerRunPause(state.duration, state.positionPoint, state.distance));
+      emit(TimerRunPause(
+          state.duration, state.positionPoint, state.distance, state.list));
     }
   }
 
@@ -87,34 +90,35 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       _tickerSubscription?.resume();
       _positionStream?.resume();
       emit(TimerRunInProgress(
-          state.duration, state.positionPoint, state.distance));
+          state.duration, state.positionPoint, state.distance, state.list));
     }
   }
 
   void _onReset(TimerReset event, Emitter<TimerState> emit) {
     _tickerSubscription?.cancel();
     _positionStream?.cancel();
-    emit(const TimerInitial(_duration, _positionPoint, _distance));
+    emit(const TimerInitial(_duration, _positionPoint, _distance, _list));
   }
 
-  // void _onComplete(TimerReset event, Emitter<TimerState> emit) {
-  //   _tickerSubscription?.cancel();
-  //   _positionStream?.cancel();
-  //   emit(TimerRunComplete(state.duration, state.positionPoint, state.point));
-  // }
+  void _onComplete(TimerComplete event, Emitter<TimerState> emit) {
+    _tickerSubscription?.cancel();
+    _positionStream?.cancel();
+    emit(TimerRunComplete(
+        state.duration, state.positionPoint, state.distance, state.list));
+  }
 
   void _onTicked(TimerTicked event, Emitter<TimerState> emit) {
     emit(TimerRunInProgress(
-        event.duration, state.positionPoint, state.distance));
+        event.duration, state.positionPoint, state.distance, state.list));
   }
 
   void _onPositionPoint(TimerPositionPoint event, Emitter<TimerState> emit) {
     emit(TimerRunInProgress(
-        state.duration, event.positionPoint, state.distance));
+        state.duration, event.positionPoint, state.distance, state.list));
   }
 
   void _onDistance(TimerDistance event, Emitter<TimerState> emit) {
     emit(TimerRunInProgress(
-        state.duration, state.positionPoint, event.distance));
+        state.duration, state.positionPoint, event.distance, state.list));
   }
 }
